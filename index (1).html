@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mama Concha — African Heritage Clothing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500;0,6..72,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#100E0B;color:#ECE4D6;font-family:'Archivo',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+::selection{background:#E2611A;color:#100E0B}
+button,select,input{font-family:inherit}
+input{color:#ECE4D6;background:transparent}
+:root{--accent:#E2611A;--accent2:#D9A441;--base:#100E0B;--panel:#181510;--panel2:#221E17;--line:#2E2A22;--text:#ECE4D6;--muted:#9A917F}
+@keyframes mcFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mcFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes mcRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mcReveal{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+#mc-header{position:sticky;top:0;z-index:40;background:rgba(16,14,11,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+#mc-search{position:fixed;left:0;right:0;top:0;z-index:60;background:var(--panel);border-bottom:1px solid var(--line);transform:translateY(-100%);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .25s}
+#mc-search.open{transform:translateY(0);opacity:1;pointer-events:auto}
+#mc-overlay{position:fixed;inset:0;z-index:70;background:rgba(8,7,5,.6);opacity:0;pointer-events:none;transition:opacity .3s;cursor:pointer}
+#mc-overlay.open{opacity:1;pointer-events:auto}
+#mc-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;z-index:80;background:var(--base);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .38s cubic-bezier(.2,.85,.2,1);display:flex;flex-direction:column}
+#mc-drawer.open{transform:translateX(0)}
+#mc-toast{position:fixed;left:50%;bottom:32px;z-index:90;background:var(--text);color:#100E0B;font-weight:700;font-size:13px;letter-spacing:.04em;padding:13px 22px;border-radius:30px;opacity:0;transform:translateX(-50%) translateY(14px);transition:opacity .3s ease,transform .3s cubic-bezier(.2,.85,.2,1);pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.4);white-space:nowrap}
+#mc-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.mc-reveal{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s ease}
+.mc-reveal.visible{opacity:1;transform:none}
+.mc-inp{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:14px 16px;color:var(--text);font-size:14px;outline:none}
+.mc-inp:focus{border-color:var(--accent)}
+.mc-btn-acc{appearance:none;border:none;background:var(--accent);color:#100E0B;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:background .2s}
+.mc-btn-acc:hover{background:var(--text)}
+.mc-btn-out{appearance:none;border:1px solid var(--line);background:transparent;color:var(--text);font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;border-radius:2px;cursor:pointer;transition:border-color .2s}
+.mc-btn-out:hover{border-color:var(--text)}
+.card-tile{aspect-ratio:3/4;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:16px;transition:filter .35s ease}
+.card-tile:hover{filter:brightness(1.08)}
+.card-wrap{cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:transform .32s cubic-bezier(.2,.7,.2,1)}
+.card-wrap:hover{transform:translateY(-7px)}
+.card-add-btn{appearance:none;border:1px solid var(--line);background:transparent;color:var(--text);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:11px;cursor:pointer;border-radius:2px;transition:background .2s,border-color .2s,color .2s}
+.card-add-btn:hover{background:var(--accent);border-color:var(--accent);color:#100E0B}
+</style>
+</head>
+<body>
+<header id="mc-header"></header>
+<div id="mc-search"></div>
+<div id="mc-main" style="min-height:60vh"></div>
+<footer id="mc-footer"></footer>
+<div id="mc-overlay" onclick="closeDrawer()"></div>
+<aside id="mc-drawer"></aside>
+<div id="mc-toast"></div>
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+// img: swap any URL below with your own product photo (600×800 or 3:4 ratio recommended)
+const catalog = [
+  {id:'sahel-kaftan',name:'Sahel Kaftan',category:'Kaftans',price:145,color:'#2E3A59',colorName:'Indigo',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?kaftan,african,men&sig=1',desc:'A flowing full-length kaftan cut from breathable cotton, finished with hand-embroidered neckline detailing.'},
+  {id:'timbuktu-agbada',name:'Timbuktu Agbada Set',category:'Agbada',price:320,color:'#8A4B32',colorName:'Clay',tag:'New',img:'https://source.unsplash.com/600x800/?agbada,african,robe&sig=2',desc:'Three-piece agbada — a flowing outer robe, inner tunic and drawstring trousers in richly woven fabric.'},
+  {id:'kano-dashiki',name:'Kano Dashiki Shirt',category:'Dashiki',price:85,color:'#C68A2E',colorName:'Ochre',tag:'',img:'https://source.unsplash.com/600x800/?dashiki,african,shirt&sig=3',desc:'A classic dashiki with a bold embroidered placket and a relaxed short-sleeve fit.'},
+  {id:'sokoto-trouser',name:'Sokoto Wide Trouser',category:'Trousers',price:95,color:'#4A4A2E',colorName:'Olive',tag:'',img:'https://source.unsplash.com/600x800/?african,fashion,trousers&sig=4',desc:'High-rise wide-leg sokoto trousers with an elasticated waist and deep side pockets.'},
+  {id:'adire-boubou',name:'Adire Boubou Robe',category:'Agbada',price:240,color:'#27506B',colorName:'Adire Blue',tag:'',img:'https://source.unsplash.com/600x800/?boubou,african,blue&sig=5',desc:'A hand-dyed adire boubou robe with resist-dyed indigo patterning and a generous one-size drape.'},
+  {id:'kente-kufi',name:'Kente Kufi Cap',category:'Accessories',price:38,color:'#B0472B',colorName:'Kente Red',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?africa,hat,textile&sig=6',desc:'A woven kufi cap in vibrant kente-inspired stripes.'},
+  {id:'cowrie-necklace',name:'Cowrie Bead Necklace',category:'Accessories',price:45,color:'#2F5D4E',colorName:'Emerald',tag:'',img:'https://source.unsplash.com/600x800/?cowrie,necklace,beads&sig=7',desc:'A statement necklace strung with natural cowrie shells and glass beads.'},
+  {id:'raffia-tote',name:'Raffia Market Tote',category:'Accessories',price:60,color:'#A88248',colorName:'Natural',tag:'New',img:'https://source.unsplash.com/600x800/?raffia,basket,tote&sig=8',desc:'A hand-woven raffia market tote with leather handles and a roomy interior.'},
+  {id:'ndebele-kaftan',name:'Ndebele Kaftan',category:'Kaftans',price:160,color:'#9C3A2E',colorName:'Sienna',tag:'New',img:'https://source.unsplash.com/600x800/?kaftan,african,women&sig=9',desc:'A geometric Ndebele-inspired kaftan with contrast piping and a structured collar.'},
+  {id:'mudcloth-dashiki',name:'Mudcloth Dashiki',category:'Dashiki',price:92,color:'#3A332B',colorName:'Mud Brown',tag:'',img:'https://source.unsplash.com/600x800/?mudcloth,african,textile&sig=10',desc:'A dashiki printed with traditional bogolan mudcloth motifs in earthen tones.'},
+  {id:'asooke-wrap',name:'Aso-Oke Wrap Dress',category:'Womenswear',price:175,color:'#7A3B4E',colorName:'Plum',tag:'New',img:'https://source.unsplash.com/600x800/?african,dress,wrap&sig=11',desc:'A wrap dress woven from aso-oke fabric with a tie waist and fluid skirt.'},
+  {id:'ankara-maxi',name:'Ankara Maxi Dress',category:'Womenswear',price:150,color:'#B45A38',colorName:'Terracotta',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?ankara,dress,african&sig=12',desc:'A floor-length Ankara print maxi with a fitted bodice and flared hem.'},
+  {id:'boubou-set-w',name:"Women's Boubou Set",category:'Womenswear',price:210,color:'#2E5A52',colorName:'Teal',tag:'',img:'https://source.unsplash.com/600x800/?african,women,outfit&sig=13',desc:'A matching boubou robe and trouser set in lustrous embroidered fabric.'},
+  {id:'desert-linen-kaftan',name:'Desert Linen Kaftan',category:'Kaftans',price:130,color:'#C9A876',colorName:'Sand',tag:'',img:'https://source.unsplash.com/600x800/?kaftan,linen,sand&sig=14',desc:'A lightweight pure-linen kaftan built for heat, with a split side hem.'},
+  {id:'royal-agbada',name:'Royal Agbada Gold',category:'Agbada',price:380,color:'#9A7B1F',colorName:'Royal Gold',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?agbada,gold,african&sig=15',desc:'Our most ornate agbada — gold-thread embroidery across a deep three-piece set.'},
+  {id:'sahara-sokoto-set',name:'Sahara Sokoto Set',category:'Trousers',price:110,color:'#6B4A2E',colorName:'Walnut',tag:'',img:'https://source.unsplash.com/600x800/?african,men,fashion&sig=16',desc:'A coordinated tunic-and-sokoto set in brushed cotton with tonal embroidery.'},
+];
+
+const T = {
+en:{
+  nav_home:'Home',nav_shop:'Shop All',nav_kaftans:'Kaftans',nav_agbada:'Agbada',nav_women:'Women',nav_fit:'AI Fit Check',
+  search_ph:'Search kaftans, agbada, dashiki…',search_btn:'Search',search_close:'Close',
+  hero_badge:'Heritage menswear & womenswear',hero_t1:'Wear your',hero_t2:'heritage',
+  hero_sub:'Kaftans, agbada, dashiki and Ankara pieces — cut from adire, aso-oke, mudcloth and kente by makers who know the cloth. Old craft, bold attitude.',
+  hero_cta1:'Shop the collection',hero_cta2:'Explore kaftans',
+  stat_styles:'Artisan styles',stat_regions:'Weaving regions',stat_rating:'Avg. rating',
+  hero_feat:'Featured · Agbada',hero_card_title1:'Royal Agbada,',hero_card_title2:'gold thread',hero_card_coll:'The Sahel Collection',
+  cat_title:'Shop by category',view_all:'View all →',feat_title:'New & loved',shop_all_link:'Shop all →',add_to_bag:'Add to bag',
+  heritage_kicker:'The cloth tells the story',
+  heritage_quote:'“Every kaftan begins on a wooden loom — adire dipped in indigo, aso-oke woven in narrow strips, mudcloth painted by hand. We just cut it sharp.”',
+  heritage_founder:'— Mama Concha, founder',
+  ai_soon:'Coming soon',ai_title:'Will it fit you?',
+  ai_sub:'Upload a photo and our AI Fit Check drapes the kaftan on your frame — see the fall, length and sleeve before you buy. No more guessing across sizes.',
+  ai_preview:'Preview the feature →',
+  shop_title:'Shop all',shop_sub:'earthy heritage pieces, ready to ship',item_sing:'item',item_plural:'items',
+  sort_featured:'Featured',sort_newest:'Newest',sort_low:'Price: Low to High',sort_high:'Price: High to Low',
+  nothing_title:'Nothing here yet',nothing_sub:'No pieces match your filters.',clear_filters:'Clear filters',
+  bc_shop:'Shop',select_size:'Select size',colour:'Colour',also_like:'You might also like',try_ai:'✶ Try AI Fit Check',
+  bullet1:'Handcrafted from traditional woven cloth',bullet3:'Ethically made by artisan cooperatives',add_to_bag_word:'Add to bag',
+  free_ship_a:'Free shipping over ',free_ship_b:' · 30-day returns',
+  co_title:'Checkout',co_contact:'01 · Contact',co_shipping:'02 · Shipping address',co_payment:'03 · Payment',
+  ph_email:'Email address',ph_phone:'Phone (for delivery)',ph_first:'First name',ph_last:'Last name',ph_address:'Address',ph_city:'City',ph_country:'Country',ph_card:'Card number',ph_mmyy:'MM / YY',ph_cvc:'CVC',
+  order_summary:'Order summary',bag_empty:'Your bag is empty.',sub_word:'Subtotal',ship_word:'Shipping',total_word:'Total',place_order:'Place order',secure:'Secure checkout · demo only',free_label:'Free',
+  confirm_title:'Order placed',confirm_thanks:'Thank you — your pieces are being prepared by our artisans.',order_number:'Order number ·',continue_shopping:'Continue shopping',
+  fit_dev:'In development',fit_t1:'AI Fit Check — see it on',fit_t2:'you',
+  fit_sub:"Soon you’ll upload a single photo and watch the kaftan drape onto your frame — true length, sleeve and fall, on your body, before you buy.",
+  fit_upload:'Upload your photo',fit_front:'Front-facing, full body works best',fit_notify:'Notify me at launch',
+  fit_s1t:'Snap or upload',fit_s1b:'One clear photo of yourself is all it takes.',
+  fit_s2t:'AI drapes the cloth',fit_s2b:'We map the garment to your proportions and posture.',
+  fit_s3t:'Pick your true size',fit_s3b:'Compare S–XXL on your own frame and order with confidence.',
+  fit_browse:'Browse the collection meanwhile →',
+  footer_tag:'African heritage clothing — kaftans, agbada, dashiki and Ankara pieces, cut sharp for every generation.',
+  f_shop:'Shop',f_kaftans:'Kaftans',f_agbada:'Agbada',f_women:'Womenswear',f_all:'All products',
+  f_help:'Help',help_ship:'Shipping & returns',help_size:'Size guide',help_fit:'AI Fit Check',help_contact:'Contact us',
+  f_news:'Newsletter',news_sub:'New drops & the cloth behind them.',news_ph:'Email',
+  rights:'© 2026 Mama Concha. All rights reserved.',legal:'Privacy · Terms · Cookies',
+  cart_title:'Your bag',cart_empty:'Your bag is empty',start_shopping:'Start shopping',size_word:'Size',qty_word:'Qty',remove_word:'Remove',checkout_word:'Checkout',
+  toast_added:'Added to bag',free_rem_a:'Add ',free_rem_b:' for free shipping',free_unlocked:"You’ve unlocked free shipping",
+  cat:{All:'All',Kaftans:'Kaftans',Agbada:'Agbada',Dashiki:'Dashiki',Trousers:'Trousers',Womenswear:'Womenswear',Accessories:'Accessories'},
+  tag:{Bestseller:'Bestseller',New:'New'},
+},
+fr:{
+  nav_home:'Accueil',nav_shop:'Boutique',nav_kaftans:'Kaftans',nav_agbada:'Agbada',nav_women:'Femme',nav_fit:'Essayage IA',
+  search_ph:'Rechercher kaftans, agbada, dashiki…',search_btn:'Rechercher',search_close:'Fermer',
+  hero_badge:'Mode patrimoine homme & femme',hero_t1:'Portez votre',hero_t2:'héritage',
+  hero_sub:"Kaftans, agbada, dashiki et pièces Ankara — taillés dans l’adire, l’aso-oke, le bogolan et le kente par des artisans qui connaissent le tissu. Savoir-faire ancien, attitude audacieuse.",
+  hero_cta1:'Voir la collection',hero_cta2:'Explorer les kaftans',
+  stat_styles:'Styles artisanaux',stat_regions:'Régions de tissage',stat_rating:'Note moyenne',
+  hero_feat:'En vedette · Agbada',hero_card_title1:'Agbada royal,',hero_card_title2:"fil d’or",hero_card_coll:'La collection Sahel',
+  cat_title:'Acheter par catégorie',view_all:'Tout voir →',feat_title:'Nouveautés & favoris',shop_all_link:'Tout voir →',add_to_bag:'Ajouter au panier',
+  heritage_kicker:'Le tissu raconte l’histoire',
+  heritage_quote:'« Chaque kaftan naît sur un métier de bois — adire trempé dans l’indigo, aso-oke tissé en bandes étroites, bogolan peint à la main. Nous, on le taille net. »',
+  heritage_founder:'— Mama Concha, fondatrice',
+  ai_soon:'Bientôt',ai_title:'Vous ira-t-il ?',
+  ai_sub:"Téléchargez une photo et notre Essayage IA drape le kaftan sur votre silhouette — voyez le tombé, la longueur et les manches avant d’acheter. Fini d’hésiter entre les tailles.",
+  ai_preview:'Voir la fonctionnalité →',
+  shop_title:'Toute la collection',shop_sub:'pièces patrimoine, prêtes à expédier',item_sing:'article',item_plural:'articles',
+  sort_featured:'En vedette',sort_newest:'Nouveautés',sort_low:'Prix : croissant',sort_high:'Prix : décroissant',
+  nothing_title:'Rien pour l’instant',nothing_sub:'Aucune pièce ne correspond à vos filtres.',clear_filters:'Réinitialiser',
+  bc_shop:'Boutique',select_size:'Choisir la taille',colour:'Couleur',also_like:'Vous aimerez aussi',try_ai:'✶ Essayer l’Essayage IA',
+  bullet1:'Fait main à partir de tissu traditionnel',bullet3:"Fabriqué éthiquement par des coopératives d’artisans",add_to_bag_word:'Ajouter',
+  free_ship_a:'Livraison gratuite dès ',free_ship_b:' · retours sous 30 jours',
+  co_title:'Paiement',co_contact:'01 · Contact',co_shipping:'02 · Adresse de livraison',co_payment:'03 · Paiement',
+  ph_email:'Adresse e-mail',ph_phone:'Téléphone (livraison)',ph_first:'Prénom',ph_last:'Nom',ph_address:'Adresse',ph_city:'Ville',ph_country:'Pays',ph_card:'Numéro de carte',ph_mmyy:'MM / AA',ph_cvc:'CVC',
+  order_summary:'Récapitulatif',bag_empty:'Votre panier est vide.',sub_word:'Sous-total',ship_word:'Livraison',total_word:'Total',place_order:'Commander',secure:'Paiement sécurisé · démo',free_label:'Gratuite',
+  confirm_title:'Commande passée',confirm_thanks:'Merci — vos pièces sont préparées par nos artisans.',order_number:'Numéro de commande ·',continue_shopping:'Continuer mes achats',
+  fit_dev:'En développement',fit_t1:'Essayage IA — voyez-le sur',fit_t2:'vous',
+  fit_sub:"Bientôt, téléchargez une seule photo et regardez le kaftan se draper sur votre silhouette — longueur, manches et tombé réels, sur votre corps, avant d’acheter.",
+  fit_upload:'Téléchargez votre photo',fit_front:'De face, plein pied de préférence',fit_notify:'Me prévenir au lancement',
+  fit_s1t:'Photographiez ou téléchargez',fit_s1b:'Une seule photo nette de vous suffit.',
+  fit_s2t:'L’IA drape le tissu',fit_s2b:'Nous adaptons le vêtement à vos proportions et posture.',
+  fit_s3t:'Choisissez votre taille',fit_s3b:'Comparez du S au XXL sur votre silhouette et commandez en confiance.',
+  fit_browse:'Parcourir la collection en attendant →',
+  footer_tag:'Mode patrimoine africaine — kaftans, agbada, dashiki et pièces Ankara, taillés net pour chaque génération.',
+  f_shop:'Boutique',f_kaftans:'Kaftans',f_agbada:'Agbada',f_women:'Mode femme',f_all:'Tous les produits',
+  f_help:'Aide',help_ship:'Livraison & retours',help_size:'Guide des tailles',help_fit:'Essayage IA',help_contact:'Nous contacter',
+  f_news:'Newsletter',news_sub:'Nouveautés & le tissu derrière.',news_ph:'E-mail',
+  rights:'© 2026 Mama Concha. Tous droits réservés.',legal:'Confidentialité · CGU · Cookies',
+  cart_title:'Votre panier',cart_empty:'Votre panier est vide',start_shopping:'Commencer',size_word:'Taille',qty_word:'Qté',remove_word:'Retirer',checkout_word:'Paiement',
+  toast_added:'Ajouté au panier',free_rem_a:'Ajoutez ',free_rem_b:' pour la livraison gratuite',free_unlocked:'Livraison gratuite débloquée',
+  cat:{All:'Tout',Kaftans:'Kaftans',Agbada:'Agbada',Dashiki:'Dashiki',Trousers:'Pantalons',Womenswear:'Mode femme',Accessories:'Accessoires'},
+  tag:{Bestseller:'Best-seller',New:'Nouveau'},
+},
+es:{
+  nav_home:'Inicio',nav_shop:'Tienda',nav_kaftans:'Kaftanes',nav_agbada:'Agbada',nav_women:'Mujer',nav_fit:'Prueba IA',
+  search_ph:'Buscar kaftanes, agbada, dashiki…',search_btn:'Buscar',search_close:'Cerrar',
+  hero_badge:'Moda patrimonio hombre & mujer',hero_t1:'Viste tu',hero_t2:'herencia',
+  hero_sub:'Kaftanes, agbada, dashiki y piezas Ankara — cortados en adire, aso-oke, mudcloth y kente por artesanos que conocen la tela. Oficio antiguo, actitud audaz.',
+  hero_cta1:'Ver la colección',hero_cta2:'Explorar kaftanes',
+  stat_styles:'Estilos artesanales',stat_regions:'Regiones tejedoras',stat_rating:'Valoración media',
+  hero_feat:'Destacado · Agbada',hero_card_title1:'Agbada real,',hero_card_title2:'hilo de oro',hero_card_coll:'La colección Sahel',
+  cat_title:'Comprar por categoría',view_all:'Ver todo →',feat_title:'Novedades y favoritos',shop_all_link:'Ver todo →',add_to_bag:'Añadir a la bolsa',
+  heritage_kicker:'La tela cuenta la historia',
+  heritage_quote:'«Cada kaftan nace en un telar de madera — adire teñido en índigo, aso-oke tejido en tiras estrechas, mudcloth pintado a mano. Nosotros solo lo cortamos con precisión.»',
+  heritage_founder:'— Mama Concha, fundadora',
+  ai_soon:'Próximamente',ai_title:'¿Te quedará bien?',
+  ai_sub:'Sube una foto y nuestra Prueba IA coloca el kaftan sobre tu figura — ve la caída, el largo y las mangas antes de comprar. Se acabó adivinar la talla.',
+  ai_preview:'Ver la función →',
+  shop_title:'Toda la colección',shop_sub:'piezas patrimonio, listas para enviar',item_sing:'artículo',item_plural:'artículos',
+  sort_featured:'Destacados',sort_newest:'Más nuevos',sort_low:'Precio: menor a mayor',sort_high:'Precio: mayor a menor',
+  nothing_title:'Nada por aquí',nothing_sub:'Ninguna pieza coincide con tus filtros.',clear_filters:'Limpiar filtros',
+  bc_shop:'Tienda',select_size:'Elegir talla',colour:'Color',also_like:'También te puede gustar',try_ai:'✶ Probar Prueba IA',
+  bullet1:'Hecho a mano con tela tejida tradicional',bullet3:'Hecho éticamente por cooperativas de artesanos',add_to_bag_word:'Añadir',
+  free_ship_a:'Envío gratis desde ',free_ship_b:' · devoluciones en 30 días',
+  co_title:'Pagar',co_contact:'01 · Contacto',co_shipping:'02 · Dirección de envío',co_payment:'03 · Pago',
+  ph_email:'Correo electrónico',ph_phone:'Teléfono (entrega)',ph_first:'Nombre',ph_last:'Apellido',ph_address:'Dirección',ph_city:'Ciudad',ph_country:'País',ph_card:'Número de tarjeta',ph_mmyy:'MM / AA',ph_cvc:'CVC',
+  order_summary:'Resumen',bag_empty:'Tu bolsa está vacía.',sub_word:'Subtotal',ship_word:'Envío',total_word:'Total',place_order:'Realizar pedido',secure:'Pago seguro · demo',free_label:'Gratis',
+  confirm_title:'Pedido realizado',confirm_thanks:'Gracias — tus piezas están siendo preparadas por nuestros artesanos.',order_number:'Número de pedido ·',continue_shopping:'Seguir comprando',
+  fit_dev:'En desarrollo',fit_t1:'Prueba IA — míralo en',fit_t2:'ti',
+  fit_sub:'Pronto subirás una sola foto y verás el kaftan caer sobre tu figura — largo, mangas y caída reales, en tu cuerpo, antes de comprar.',
+  fit_upload:'Sube tu foto',fit_front:'De frente, cuerpo entero es mejor',fit_notify:'Avísame en el lanzamiento',
+  fit_s1t:'Haz o sube una foto',fit_s1b:'Basta una foto clara de ti.',
+  fit_s2t:'La IA coloca la tela',fit_s2b:'Adaptamos la prenda a tus proporciones y postura.',
+  fit_s3t:'Elige tu talla exacta',fit_s3b:'Compara de S a XXL en tu figura y pide con confianza.',
+  fit_browse:'Explora la colección mientras tanto →',
+  footer_tag:'Moda patrimonio africana — kaftanes, agbada, dashiki y piezas Ankara, cortados con precisión para cada generación.',
+  f_shop:'Tienda',f_kaftans:'Kaftanes',f_agbada:'Agbada',f_women:'Moda mujer',f_all:'Todos los productos',
+  f_help:'Ayuda',help_ship:'Envíos y devoluciones',help_size:'Guía de tallas',help_fit:'Prueba IA',help_contact:'Contáctanos',
+  f_news:'Boletín',news_sub:'Novedades y la tela detrás.',news_ph:'Correo',
+  rights:'© 2026 Mama Concha. Todos los derechos reservados.',legal:'Privacidad · Términos · Cookies',
+  cart_title:'Tu bolsa',cart_empty:'Tu bolsa está vacía',start_shopping:'Empezar a comprar',size_word:'Talla',qty_word:'Cant.',remove_word:'Quitar',checkout_word:'Pagar',
+  toast_added:'Añadido a la bolsa',free_rem_a:'Añade ',free_rem_b:' para envío gratis',free_unlocked:'Envío gratis desbloqueado',
+  cat:{All:'Todo',Kaftans:'Kaftanes',Agbada:'Agbada',Dashiki:'Dashiki',Trousers:'Pantalones',Womenswear:'Moda mujer',Accessories:'Accesorios'},
+  tag:{Bestseller:'Más vendido',New:'Nuevo'},
+},
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let state = {
+  screen:'home', cart:[], drawerOpen:false, searchOpen:false,
+  activeCat:'All', sort:'featured', search:'', selectedId:null,
+  selSize:'M', selQty:1, toast:'', orderNo:'',
+  lang:(()=>{try{return localStorage.getItem('mc_lang')||'en'}catch(e){return'en'}})(),
+};
+let _toastTimer = null;
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const tr = k => (T[state.lang]||T.en)[k] || (T.en[k]||'');
+const catStr = n => ((T[state.lang]||T.en).cat||{})[n]||n;
+const tagStr = t => t ? (((T[state.lang]||T.en).tag||{})[t]||t) : '';
+const money = n => '$'+n;
+const sizesFor = p => p.category==='Accessories'?['One Size']:['S','M','L','XL','XXL'];
+const find = id => catalog.find(p=>p.id===id);
+const thr = 200;
+
+function cartTotals(){
+  const cartCount = state.cart.reduce((a,c)=>a+c.qty,0);
+  const subtotal = state.cart.reduce((a,c)=>a+find(c.id).price*c.qty,0);
+  const shipping = (subtotal===0||subtotal>=thr)?0:12;
+  const total = subtotal+shipping;
+  const remaining = Math.max(0,thr-subtotal);
+  return {cartCount,subtotal,shipping,total,remaining};
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function go(screen){ setState({screen,drawerOpen:false,searchOpen:false}); window.scrollTo(0,0); }
+function navCat(cat){ setState({activeCat:cat,screen:'shop',drawerOpen:false,searchOpen:false,search:''}); window.scrollTo(0,0); }
+function openProduct(id){
+  const p=find(id); const sz=sizesFor(p);
+  setState({selectedId:id,screen:'product',selSize:sz.indexOf('M')>=0?'M':sz[0],selQty:1,drawerOpen:false,searchOpen:false});
+  window.scrollTo(0,0);
+}
+
+// ── CART ──────────────────────────────────────────────────────────────────────
+function addToCart(id,size,qty){
+  const cart=[...state.cart]; const i=cart.findIndex(c=>c.id===id&&c.size===size);
+  if(i>=0) cart[i]={...cart[i],qty:cart[i].qty+qty}; else cart.push({id,size,qty});
+  setState({cart,drawerOpen:true});
+  showToast(tr('toast_added'));
+}
+function quickAdd(id){ const p=find(id); const sz=sizesFor(p); addToCart(id,sz.indexOf('M')>=0?'M':sz[0],1); }
+function changeQty(id,size,delta){
+  const cart=[...state.cart]; const i=cart.findIndex(c=>c.id===id&&c.size===size);
+  if(i<0) return; const q=cart[i].qty+delta;
+  if(q<=0) cart.splice(i,1); else cart[i]={...cart[i],qty:q};
+  setState({cart});
+}
+function removeItem(id,size){ setState({cart:state.cart.filter(c=>!(c.id===id&&c.size===size))}); }
+function placeOrder(){ const no='MC-'+Math.floor(100000+Math.random()*900000); setState({screen:'confirm',cart:[],drawerOpen:false,orderNo:no}); window.scrollTo(0,0); }
+
+// ── MISC ──────────────────────────────────────────────────────────────────────
+function setLang(l){ try{localStorage.setItem('mc_lang',l)}catch(e){} setState({lang:l}); }
+function toggleDrawer(){ setState({drawerOpen:!state.drawerOpen}); }
+function closeDrawer(){ setState({drawerOpen:false}); }
+function toggleSearch(){ setState({searchOpen:!state.searchOpen}); if(!state.searchOpen) setTimeout(()=>{const i=document.getElementById('mc-s-input');if(i)i.focus();},50); }
+function closeSearch(){ setState({searchOpen:false}); }
+function submitSearch(){ setState({screen:'shop',searchOpen:false,activeCat:'All'}); window.scrollTo(0,0); }
+function setSort(v){ setState({sort:v}); }
+function setActiveCat(c){ setState({activeCat:c}); }
+function setSelSize(s){ setState({selSize:s}); }
+function incQty(){ setState({selQty:Math.min(9,state.selQty+1)}); }
+function decQty(){ setState({selQty:Math.max(1,state.selQty-1)}); }
+function addSelToCart(){ if(!state.selectedId) return; addToCart(state.selectedId,state.selSize,state.selQty); }
+function goCheckout(){ setState({screen:'checkout',drawerOpen:false}); window.scrollTo(0,0); }
+
+function showToast(msg){
+  clearTimeout(_toastTimer);
+  const el=document.getElementById('mc-toast');
+  el.innerHTML='&#10003; '+msg; el.classList.add('show');
+  _toastTimer=setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+// ── CLOTH TEXTURE ─────────────────────────────────────────────────────────────
+const clothSm = c => `background-color:${c};background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.11) 0 2px,transparent 2px 12px),repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 12px),radial-gradient(circle at 50% 24%,rgba(255,255,255,.14),transparent 56%)`;
+const clothLg = c => `background-color:${c};background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.12) 0 2px,transparent 2px 13px),repeating-linear-gradient(-45deg,rgba(255,255,255,.07) 0 2px,transparent 2px 13px),radial-gradient(circle at 50% 22%,rgba(255,255,255,.16),transparent 58%)`;
+// image backgrounds — gradient overlay keeps card text legible; falls back to cloth if no img
+const imgBgSm = p => p.img ? `background:${p.color};background-image:linear-gradient(to bottom,rgba(0,0,0,.22) 0,transparent 40%,rgba(0,0,0,.52) 100%),url('${p.img}');background-size:cover;background-position:center top` : clothSm(p.color);
+const imgBgLg = p => p.img ? `background:${p.color};background-image:linear-gradient(to bottom,rgba(0,0,0,.18) 0,transparent 35%,rgba(0,0,0,.58) 100%),url('${p.img}');background-size:cover;background-position:center top` : clothLg(p.color);
+
+// ── PRODUCT CARD HTML ─────────────────────────────────────────────────────────
+function productCard(p,i,showAdd=true){
+  const delay=((i%8)*0.05).toFixed(2)+'s';
+  const cat=catStr(p.category); const tag=tagStr(p.tag);
+  return `<div class="card-wrap" onclick="openProduct('${p.id}')" style="animation:mcFadeIn .5s ease both;animation-delay:${delay}">
+    <div class="card-tile" style="${imgBgSm(p)}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600">${cat}</span>
+        ${tag?`<span style="background:var(--accent);color:#100E0B;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;border-radius:2px">${tag}</span>`:''}
+      </div>
+      <div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:23px;line-height:1.05;color:rgba(255,255,255,.96);margin-bottom:6px">${p.name}</div>
+        <div style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.45);font-weight:600">Mama Concha</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+      <div><div style="font-size:14px;font-weight:600">${p.name}</div><div style="font-size:12px;color:var(--muted)">${p.colorName}</div></div>
+      <div style="font-size:14px;font-weight:700">${money(p.price)}</div>
+    </div>
+    ${showAdd?`<button class="card-add-btn" onclick="event.stopPropagation();quickAdd('${p.id}')">${tr('add_to_bag')}</button>`:''}
+  </div>`;
+}
+
+// ── FILTERED CATALOG ──────────────────────────────────────────────────────────
+function filtered(){
+  let list=[...catalog];
+  if(state.activeCat!=='All') list=list.filter(p=>p.category===state.activeCat);
+  const q=state.search.trim().toLowerCase();
+  if(q) list=list.filter(p=>(p.name+' '+p.category+' '+p.colorName).toLowerCase().includes(q));
+  if(state.sort==='low') list.sort((a,b)=>a.price-b.price);
+  else if(state.sort==='high') list.sort((a,b)=>b.price-a.price);
+  else if(state.sort==='newest') list.sort((a,b)=>(b.tag==='New'?1:0)-(a.tag==='New'?1:0));
+  return list;
+}
+
+// ── BUILD: HOME ───────────────────────────────────────────────────────────────
+function buildHome(){
+  const featured=[...catalog].sort((a,b)=>(b.tag==='New'?1:0)-(a.tag==='New'?1:0)).slice(0,8);
+  const homeCats=[
+    {name:'Kaftans',color:'#2E3A59'},{name:'Agbada',color:'#8A4B32'},
+    {name:'Dashiki',color:'#C68A2E'},{name:'Trousers',color:'#4A4A2E'},
+    {name:'Womenswear',color:'#7A3B4E'},{name:'Accessories',color:'#2F5D4E'},
+  ];
+  return `
+  <main>
+    <!-- HERO -->
+    <section style="max-width:1280px;margin:0 auto;padding:56px 28px 30px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center">
+      <div style="animation:mcFadeUp .6s ease both">
+        <div style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:30px;padding:7px 14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:24px">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block"></span> ${tr('hero_badge')}
+        </div>
+        <h1 style="font-family:'Anton',sans-serif;font-weight:400;font-size:84px;line-height:.92;letter-spacing:.005em;text-transform:uppercase;margin:0 0 22px">${tr('hero_t1')}<br><span style="color:var(--accent)">${tr('hero_t2')}</span></h1>
+        <p style="font-size:17px;line-height:1.6;color:var(--muted);max-width:440px;margin:0 0 30px">${tr('hero_sub')}</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <button class="mc-btn-acc" onclick="go('shop')" style="padding:16px 28px">${tr('hero_cta1')}</button>
+          <button class="mc-btn-out" onclick="navCat('Kaftans')" style="padding:16px 26px">${tr('hero_cta2')}</button>
+        </div>
+        <div style="display:flex;gap:36px;margin-top:42px">
+          <div><div style="font-family:'Anton';font-size:28px">120+</div><div style="font-size:12px;color:var(--muted);letter-spacing:.04em">${tr('stat_styles')}</div></div>
+          <div><div style="font-family:'Anton';font-size:28px">14</div><div style="font-size:12px;color:var(--muted);letter-spacing:.04em">${tr('stat_regions')}</div></div>
+          <div><div style="font-family:'Anton';font-size:28px">4.9</div><div style="font-size:12px;color:var(--muted);letter-spacing:.04em">${tr('stat_rating')}</div></div>
+        </div>
+      </div>
+      <div onclick="navCat('Agbada')" style="cursor:pointer;aspect-ratio:4/5;border-radius:4px;${imgBgLg(find('royal-agbada'))};position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:28px">
+        <span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600">${tr('hero_feat')}</span>
+        <div>
+          <div style="font-family:'Newsreader',serif;font-style:italic;font-size:40px;line-height:1;color:#fff;margin-bottom:8px">${tr('hero_card_title1')}<br>${tr('hero_card_title2')}</div>
+          <div style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:600">${tr('hero_card_coll')}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORY GRID -->
+    <section class="mc-reveal" style="max-width:1280px;margin:0 auto;padding:36px 28px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px">
+        <h2 style="font-family:'Anton';font-weight:400;font-size:32px;text-transform:uppercase;margin:0">${tr('cat_title')}</h2>
+        <span onclick="go('shop')" style="cursor:pointer;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.04em">${tr('view_all')}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px">
+        ${homeCats.map(c=>`
+          <div onclick="navCat('${c.name}')" style="cursor:pointer;aspect-ratio:3/4;border-radius:3px;${clothSm(c.color)};position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:18px;transition:transform .25s" onmouseenter="this.style.transform='translateY(-4px)'" onmouseleave="this.style.transform=''">
+            <span style="font-family:'Anton';font-size:22px;text-transform:uppercase;color:#fff;line-height:1">${catStr(c.name)}</span>
+          </div>`).join('')}
+      </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS -->
+    <section class="mc-reveal" style="max-width:1280px;margin:0 auto;padding:36px 28px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px">
+        <h2 style="font-family:'Anton';font-weight:400;font-size:32px;text-transform:uppercase;margin:0">${tr('feat_title')}</h2>
+        <span onclick="go('shop')" style="cursor:pointer;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.04em">${tr('shop_all_link')}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:30px 22px">
+        ${featured.map((p,i)=>productCard(p,i)).join('')}
+      </div>
+    </section>
+
+    <!-- HERITAGE BAND -->
+    <section class="mc-reveal" style="background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:30px">
+      <div style="max-width:900px;margin:0 auto;padding:74px 28px;text-align:center">
+        <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:22px">${tr('heritage_kicker')}</div>
+        <p style="font-family:'Newsreader',serif;font-style:italic;font-size:34px;line-height:1.4;margin:0;color:var(--text)">${tr('heritage_quote')}</p>
+        <div style="margin-top:26px;font-size:13px;color:var(--muted);letter-spacing:.06em">${tr('heritage_founder')}</div>
+      </div>
+    </section>
+
+    <!-- AI BANNER -->
+    <section class="mc-reveal" style="max-width:1280px;margin:0 auto;padding:56px 28px">
+      <div style="border:1px solid var(--line);border-radius:6px;background:linear-gradient(120deg,var(--panel2),var(--panel));padding:48px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center">
+        <div>
+          <div style="display:inline-flex;align-items:center;gap:8px;background:var(--accent2);color:#100E0B;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:5px 11px;border-radius:20px;margin-bottom:18px">${tr('ai_soon')}</div>
+          <h2 style="font-family:'Anton';font-weight:400;font-size:40px;text-transform:uppercase;margin:0 0 12px">${tr('ai_title')}</h2>
+          <p style="font-size:16px;line-height:1.6;color:var(--muted);max-width:520px;margin:0">${tr('ai_sub')}</p>
+        </div>
+        <button class="mc-btn-acc" onclick="go('fit')" style="padding:18px 30px;white-space:nowrap">${tr('ai_preview')}</button>
+      </div>
+    </section>
+  </main>`;
+}
+
+// ── BUILD: SHOP ───────────────────────────────────────────────────────────────
+function buildShop(){
+  const cats=['All','Kaftans','Agbada','Dashiki','Trousers','Womenswear','Accessories'];
+  const list=filtered(); const count=list.length;
+  const subLabel=count+' '+(count===1?tr('item_sing'):tr('item_plural'))+' · '+tr('shop_sub');
+  return `
+  <main style="max-width:1280px;margin:0 auto;padding:44px 28px 70px">
+    <div style="margin-bottom:28px">
+      <h1 style="font-family:'Anton';font-weight:400;font-size:46px;text-transform:uppercase;margin:0 0 6px">${tr('shop_title')}</h1>
+      <p style="font-size:14px;color:var(--muted);margin:0">${subLabel}</p>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${cats.map(c=>{
+          const on=c===state.activeCat;
+          return `<button onclick="setActiveCat('${c}')" style="appearance:none;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;padding:9px 16px;border-radius:30px;background:${on?'var(--accent)':'transparent'};color:${on?'#100E0B':'var(--text)'};border:1px solid ${on?'var(--accent)':'var(--line)'}">${catStr(c)}</button>`;
+        }).join('')}
+      </div>
+      <select onchange="setSort(this.value)" style="appearance:none;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:30px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;outline:none">
+        <option value="featured" ${state.sort==='featured'?'selected':''}>${tr('sort_featured')}</option>
+        <option value="newest" ${state.sort==='newest'?'selected':''}>${tr('sort_newest')}</option>
+        <option value="low" ${state.sort==='low'?'selected':''}>${tr('sort_low')}</option>
+        <option value="high" ${state.sort==='high'?'selected':''}>${tr('sort_high')}</option>
+      </select>
+    </div>
+    ${count>0?`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:32px 22px">
+      ${list.map((p,i)=>productCard(p,i)).join('')}
+    </div>`:`
+    <div style="padding:70px 0;text-align:center">
+      <div style="font-family:'Newsreader',serif;font-style:italic;font-size:26px;color:var(--text);margin-bottom:10px">${tr('nothing_title')}</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:22px">${tr('nothing_sub')}</div>
+      <button class="mc-btn-out" onclick="setActiveCat('All')" style="padding:13px 22px;font-size:13px">${tr('clear_filters')}</button>
+    </div>`}
+  </main>`;
+}
+
+// ── BUILD: PRODUCT ────────────────────────────────────────────────────────────
+function buildProduct(){
+  const p=find(state.selectedId); if(!p) return buildHome();
+  const sz=sizesFor(p);
+  const related=catalog.filter(r=>r.category===p.category&&r.id!==p.id).slice(0,4);
+  const freeShipText=tr('free_ship_a')+money(thr)+tr('free_ship_b');
+  return `
+  <main style="max-width:1180px;margin:0 auto;padding:30px 28px 70px">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:24px">
+      <span onclick="go('shop')" style="cursor:pointer">${tr('bc_shop')}</span>
+      <span style="color:var(--line)"> / </span>
+      <span style="color:var(--text)">${catStr(p.category)}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:start">
+      <div style="aspect-ratio:4/5;border-radius:4px;${imgBgLg(p)};position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:30px">
+        <span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600">${catStr(p.category)}</span>
+        <div>
+          <div style="font-family:'Newsreader',serif;font-style:italic;font-size:40px;line-height:1.02;color:#fff;margin-bottom:8px">${p.name}</div>
+          <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:600">Mama Concha</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:12px">${catStr(p.category)}</div>
+        <h1 style="font-family:'Anton';font-weight:400;font-size:42px;text-transform:uppercase;line-height:1;margin:0 0 14px">${p.name}</h1>
+        <div style="font-size:26px;font-weight:700;margin-bottom:18px">${money(p.price)}</div>
+        <p style="font-size:15px;line-height:1.65;color:var(--muted);margin:0 0 26px;max-width:440px">${p.desc}</p>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${tr('colour')} &middot; <span style="color:var(--text);font-weight:600">${p.colorName}</span></div>
+
+        <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text);font-weight:600;margin:24px 0 10px">${tr('select_size')}</div>
+        <div id="mc-size-picker" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px">
+          ${sz.map(s=>{
+            const on=s===state.selSize;
+            return `<button onclick="setSelSize('${s}')" style="appearance:none;min-width:54px;padding:12px 14px;cursor:pointer;font-size:13px;font-weight:600;border-radius:3px;background:${on?'var(--accent)':'transparent'};color:${on?'#100E0B':'var(--text)'};border:1px solid ${on?'var(--accent)':'var(--line)'}">${s}</button>`;
+          }).join('')}
+        </div>
+
+        <div id="mc-qty-add" style="display:flex;gap:14px;align-items:stretch;margin-bottom:14px">
+          <div style="display:flex;align-items:center;border:1px solid var(--line);border-radius:3px">
+            <button onclick="decQty()" style="appearance:none;background:transparent;border:none;color:var(--text);width:46px;height:54px;font-size:20px;cursor:pointer">−</button>
+            <span style="width:38px;text-align:center;font-size:15px;font-weight:700">${state.selQty}</span>
+            <button onclick="incQty()" style="appearance:none;background:transparent;border:none;color:var(--text);width:46px;height:54px;font-size:20px;cursor:pointer">+</button>
+          </div>
+          <button class="mc-btn-acc" onclick="addSelToCart()" style="flex:1;padding:0 20px">${tr('add_to_bag_word')} &middot; ${money(p.price)}</button>
+        </div>
+        <button class="mc-btn-out" onclick="go('fit')" style="width:100%;padding:14px;font-size:13px;color:var(--accent2);border-color:var(--accent2);margin-bottom:26px" onmouseenter="this.style.background='var(--accent2)';this.style.color='#100E0B'" onmouseleave="this.style.background='transparent';this.style.color='var(--accent2)'">${tr('try_ai')}</button>
+
+        <div style="border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:10px;font-size:13px;color:var(--muted)"><span style="color:var(--accent)">●</span> ${tr('bullet1')}</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:var(--muted)"><span style="color:var(--accent)">●</span> ${freeShipText}</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:var(--muted)"><span style="color:var(--accent)">●</span> ${tr('bullet3')}</div>
+        </div>
+      </div>
+    </div>
+    ${related.length?`
+    <section style="margin-top:64px">
+      <h2 style="font-family:'Anton';font-weight:400;font-size:28px;text-transform:uppercase;margin:0 0 22px">${tr('also_like')}</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:26px 20px">
+        ${related.map((r,i)=>`
+          <div onclick="openProduct('${r.id}')" style="cursor:pointer;display:flex;flex-direction:column;gap:10px">
+            <div style="aspect-ratio:3/4;border-radius:3px;${imgBgSm(r)};display:flex;align-items:flex-end;padding:14px">
+              <div style="font-family:'Newsreader',serif;font-style:italic;font-size:18px;color:rgba(255,255,255,.95)">${r.name}</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${r.name}</span><span style="font-weight:700">${money(r.price)}</span></div>
+          </div>`).join('')}
+      </div>
+    </section>`:''}
+  </main>`;
+}
+
+// ── BUILD: CHECKOUT ───────────────────────────────────────────────────────────
+function buildCheckout(){
+  const {subtotal,shipping,total}=cartTotals();
+  const shippingLabel=shipping===0?tr('free_label'):money(shipping);
+  return `
+  <main style="max-width:1120px;margin:0 auto;padding:44px 28px 70px">
+    <h1 style="font-family:'Anton';font-weight:400;font-size:42px;text-transform:uppercase;margin:0 0 30px">${tr('co_title')}</h1>
+    <div style="display:grid;grid-template-columns:1.3fr .9fr;gap:44px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:30px">
+        <div>
+          <div style="font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:16px">${tr('co_contact')}</div>
+          <input class="mc-inp" placeholder="${tr('ph_email')}" style="margin-bottom:12px">
+          <input class="mc-inp" placeholder="${tr('ph_phone')}">
+        </div>
+        <div>
+          <div style="font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:16px">${tr('co_shipping')}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <input class="mc-inp" placeholder="${tr('ph_first')}">
+            <input class="mc-inp" placeholder="${tr('ph_last')}">
+            <input class="mc-inp" placeholder="${tr('ph_address')}" style="grid-column:1/3">
+            <input class="mc-inp" placeholder="${tr('ph_city')}">
+            <input class="mc-inp" placeholder="${tr('ph_country')}">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:16px">${tr('co_payment')}</div>
+          <input class="mc-inp" placeholder="${tr('ph_card')}" style="margin-bottom:12px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <input class="mc-inp" placeholder="${tr('ph_mmyy')}">
+            <input class="mc-inp" placeholder="${tr('ph_cvc')}">
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:26px;position:sticky;top:94px">
+        <div style="font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px">${tr('order_summary')}</div>
+        ${state.cart.length===0?`<div style="font-size:14px;color:var(--muted);padding:14px 0">${tr('bag_empty')}</div>`:''}
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px">
+          ${state.cart.map(c=>{const p=find(c.id);return `
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:48px;height:60px;border-radius:2px;flex-shrink:0;${imgBgSm(p)}"></div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">${p.name}</div>
+                <div style="font-size:11px;color:var(--muted)">${tr('size_word')} ${c.size} &middot; ${tr('qty_word')} ${c.qty}</div>
+              </div>
+              <div style="font-size:13px;font-weight:700">${money(p.price*c.qty)}</div>
+            </div>`}).join('')}
+        </div>
+        <div style="border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)"><span>${tr('sub_word')}</span><span style="color:var(--text)">${money(subtotal)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)"><span>${tr('ship_word')}</span><span style="color:var(--text)">${shippingLabel}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:17px;font-weight:800;margin-top:6px"><span>${tr('total_word')}</span><span>${money(total)}</span></div>
+        </div>
+        <button class="mc-btn-acc" onclick="placeOrder()" style="width:100%;padding:16px;margin-top:20px">${tr('place_order')}</button>
+        <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px">${tr('secure')}</div>
+      </div>
+    </div>
+  </main>`;
+}
+
+// ── BUILD: CONFIRM ────────────────────────────────────────────────────────────
+function buildConfirm(){
+  return `
+  <main style="max-width:640px;margin:0 auto;padding:90px 28px;text-align:center">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 26px">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#100E0B" stroke-width="2.6"><path d="M5 12l4.5 4.5L19 7"></path></svg>
+    </div>
+    <h1 style="font-family:'Anton';font-weight:400;font-size:44px;text-transform:uppercase;margin:0 0 14px">${tr('confirm_title')}</h1>
+    <p style="font-size:16px;color:var(--muted);line-height:1.6;margin:0 0 8px">${tr('confirm_thanks')}</p>
+    <div style="font-size:14px;color:var(--text);margin-bottom:34px">${tr('order_number')} <span style="color:var(--accent);font-weight:700">${state.orderNo}</span></div>
+    <button class="mc-btn-acc" onclick="go('shop')" style="padding:16px 30px">${tr('continue_shopping')}</button>
+  </main>`;
+}
+
+// ── BUILD: FIT ────────────────────────────────────────────────────────────────
+function buildFit(){
+  return `
+  <main style="max-width:1080px;margin:0 auto;padding:56px 28px 80px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--accent2);color:#100E0B;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 13px;border-radius:20px;margin-bottom:24px">${tr('fit_dev')}</div>
+    <h1 style="font-family:'Anton';font-weight:400;font-size:62px;text-transform:uppercase;line-height:.95;margin:0 0 18px;max-width:760px">${tr('fit_t1')} <span style="color:var(--accent)">${tr('fit_t2')}</span></h1>
+    <p style="font-size:18px;line-height:1.6;color:var(--muted);max-width:560px;margin:0 0 44px">${tr('fit_sub')}</p>
+    <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start">
+      <div style="border:1px dashed var(--line);border-radius:8px;background:var(--panel);padding:46px;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 22px">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><rect x="4" y="16" width="16" height="4" rx="1"></rect></svg>
+        </div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:8px">${tr('fit_upload')}</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:22px">${tr('fit_front')}</div>
+        <button disabled style="appearance:none;border:none;background:var(--line);color:var(--muted);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:14px 24px;border-radius:3px;cursor:not-allowed">${tr('fit_notify')}</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;gap:14px;align-items:flex-start"><div style="font-family:'Anton';font-size:20px;color:var(--accent);min-width:30px">01</div><div><div style="font-weight:700;font-size:15px;margin-bottom:3px">${tr('fit_s1t')}</div><div style="font-size:13px;color:var(--muted);line-height:1.5">${tr('fit_s1b')}</div></div></div>
+        <div style="display:flex;gap:14px;align-items:flex-start"><div style="font-family:'Anton';font-size:20px;color:var(--accent);min-width:30px">02</div><div><div style="font-weight:700;font-size:15px;margin-bottom:3px">${tr('fit_s2t')}</div><div style="font-size:13px;color:var(--muted);line-height:1.5">${tr('fit_s2b')}</div></div></div>
+        <div style="display:flex;gap:14px;align-items:flex-start"><div style="font-family:'Anton';font-size:20px;color:var(--accent);min-width:30px">03</div><div><div style="font-weight:700;font-size:15px;margin-bottom:3px">${tr('fit_s3t')}</div><div style="font-size:13px;color:var(--muted);line-height:1.5">${tr('fit_s3b')}</div></div></div>
+        <button class="mc-btn-out" onclick="go('shop')" style="padding:15px;font-size:13px;margin-top:8px">${tr('fit_browse')}</button>
+      </div>
+    </div>
+  </main>`;
+}
+
+// ── BUILD: HEADER ─────────────────────────────────────────────────────────────
+function buildHeader(){
+  const {cartCount}=cartTotals();
+  return `
+  <div style="max-width:1280px;margin:0 auto;padding:0 28px;height:74px;display:flex;align-items:center;gap:32px">
+    <div onclick="go('home')" style="cursor:pointer;display:flex;align-items:center;gap:8px">
+      <span style="font-family:'Anton',sans-serif;font-size:24px;letter-spacing:.04em;text-transform:uppercase;line-height:1">Mama&nbsp;Concha</span>
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;margin-bottom:8px"></span>
+    </div>
+    <nav style="display:flex;align-items:center;gap:26px;margin-left:8px">
+      <span onclick="go('home')" style="cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color=''">${tr('nav_home')}</span>
+      <span onclick="go('shop')" style="cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color=''">${tr('nav_shop')}</span>
+      <span onclick="navCat('Kaftans')" style="cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color=''">${tr('nav_kaftans')}</span>
+      <span onclick="navCat('Agbada')" style="cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color=''">${tr('nav_agbada')}</span>
+      <span onclick="navCat('Womenswear')" style="cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color=''">${tr('nav_women')}</span>
+      <span onclick="go('fit')" style="cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--accent2)" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">${tr('nav_fit')}</span>
+    </nav>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
+      <div style="position:relative;display:flex;align-items:center">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.7" style="position:absolute;left:9px;pointer-events:none"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3c2.6 2.4 4 5.6 4 9s-1.4 6.6-4 9c-2.6-2.4-4-5.6-4-9s1.4-6.6 4-9z"></path></svg>
+        <select onchange="setLang(this.value)" style="appearance:none;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:30px;padding:7px 26px 7px 28px;font-size:12px;font-weight:700;letter-spacing:.04em;cursor:pointer;outline:none">
+          <option value="en" ${state.lang==='en'?'selected':''}>EN &middot; English</option>
+          <option value="fr" ${state.lang==='fr'?'selected':''}>FR &middot; Fran&ccedil;ais</option>
+          <option value="es" ${state.lang==='es'?'selected':''}>ES &middot; Espa&ntilde;ol</option>
+        </select>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.2" style="position:absolute;right:9px;pointer-events:none"><path d="M6 9l6 6 6-6"></path></svg>
+      </div>
+      <button onclick="toggleSearch()" style="appearance:none;background:transparent;border:none;color:var(--text);cursor:pointer;padding:4px;display:flex" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--text)'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.5" y2="16.5"></line></svg>
+      </button>
+      <button onclick="toggleDrawer()" style="appearance:none;background:transparent;border:none;color:var(--text);cursor:pointer;padding:4px;position:relative;display:flex" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--text)'">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8h12l-1 12H7L6 8z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+        <span id="mc-cart-badge" style="position:absolute;top:-4px;right:-6px;background:var(--accent);color:#100E0B;font-size:10px;font-weight:800;min-width:16px;height:16px;padding:0 4px;border-radius:9px;display:${cartCount>0?'flex':'none'};align-items:center;justify-content:center;line-height:1">${cartCount}</span>
+      </button>
+    </div>
+  </div>`;
+}
+
+// ── BUILD: SEARCH ─────────────────────────────────────────────────────────────
+function buildSearchOverlay(){
+  return `
+  <div style="max-width:760px;margin:0 auto;padding:30px 28px">
+    <div style="display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--accent);padding-bottom:12px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.8"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.5" y2="16.5"></line></svg>
+      <input id="mc-s-input" oninput="onSearchInput(this.value)" placeholder="${tr('search_ph')}" value="${state.search}" style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:20px;font-family:'Archivo'">
+      <button onclick="submitSearch()" style="appearance:none;border:none;background:var(--accent);color:#100E0B;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;border-radius:2px;cursor:pointer">${tr('search_btn')}</button>
+      <button onclick="closeSearch()" style="appearance:none;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:13px">${tr('search_close')}</button>
+    </div>
+  </div>`;
+}
+
+// ── BUILD: FOOTER ─────────────────────────────────────────────────────────────
+function buildFooter(){
+  return `
+  <div style="max-width:1280px;margin:0 auto;padding:56px 28px 30px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px">
+    <div>
+      <div style="font-family:'Anton';font-size:26px;text-transform:uppercase;margin-bottom:14px">Mama Concha<span style="color:var(--accent)">.</span></div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;max-width:300px;margin:0 0 18px">${tr('footer_tag')}</p>
+      <div style="display:flex;gap:10px">
+        <div style="width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);cursor:pointer">f</div>
+        <div style="width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);cursor:pointer">in</div>
+        <div style="width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);cursor:pointer">ig</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);font-weight:700;margin-bottom:14px">${tr('f_shop')}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--muted)">
+        <span onclick="navCat('Kaftans')" style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('f_kaftans')}</span>
+        <span onclick="navCat('Agbada')" style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('f_agbada')}</span>
+        <span onclick="navCat('Womenswear')" style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('f_women')}</span>
+        <span onclick="go('shop')" style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('f_all')}</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);font-weight:700;margin-bottom:14px">${tr('f_help')}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--muted)">
+        <span style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('help_ship')}</span>
+        <span style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('help_size')}</span>
+        <span onclick="go('fit')" style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('help_fit')}</span>
+        <span style="cursor:pointer" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--muted)'">${tr('help_contact')}</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);font-weight:700;margin-bottom:14px">${tr('f_news')}</div>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 12px">${tr('news_sub')}</p>
+      <div style="display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden">
+        <input placeholder="${tr('news_ph')}" style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:13px;padding:11px 12px">
+        <button style="appearance:none;border:none;background:var(--accent);color:#100E0B;font-weight:700;font-size:12px;padding:0 16px;cursor:pointer">&rarr;</button>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:1280px;margin:0 auto;padding:18px 28px 40px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)">
+    <span>${tr('rights')}</span>
+    <span>${tr('legal')}</span>
+  </div>`;
+}
+
+// ── BUILD: CART DRAWER ────────────────────────────────────────────────────────
+function buildDrawer(){
+  const {cartCount,subtotal,shipping,total,remaining}=cartTotals();
+  const t2=T[state.lang]||T.en;
+  const shippingLabel=shipping===0?t2.free_label:money(shipping);
+  const freeRemLabel=remaining>0?(t2.free_rem_a+money(remaining)+t2.free_rem_b):t2.free_unlocked;
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid var(--line)">
+    <div style="font-family:'Anton';font-size:22px;text-transform:uppercase">${t2.cart_title}</div>
+    <button onclick="closeDrawer()" style="appearance:none;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1">&times;</button>
+  </div>
+  ${state.cart.length===0?`
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center">
+    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--line)" stroke-width="1.6"><path d="M6 8h12l-1 12H7L6 8z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+    <div style="font-size:15px;color:var(--muted)">${t2.cart_empty}</div>
+    <button class="mc-btn-out" onclick="closeDrawer();go('shop')" style="padding:13px 22px;font-size:13px">${t2.start_shopping}</button>
+  </div>`:`
+  <div style="flex:1;overflow-y:auto;padding:8px 24px">
+    ${state.cart.map(c=>{const p=find(c.id);return `
+      <div style="display:flex;gap:14px;padding:18px 0;border-bottom:1px solid var(--line)">
+        <div style="width:64px;height:80px;border-radius:3px;flex-shrink:0;${imgBgSm(p)}"></div>
+        <div style="flex:1;display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;gap:8px">
+            <div style="font-size:14px;font-weight:600">${p.name}</div>
+            <div style="font-size:14px;font-weight:700">${money(p.price*c.qty)}</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:auto">${t2.size_word} ${c.size} &middot; ${p.colorName}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+            <div style="display:flex;align-items:center;border:1px solid var(--line);border-radius:3px">
+              <button onclick="changeQty('${c.id}','${c.size}',-1)" style="appearance:none;background:transparent;border:none;color:var(--text);width:30px;height:30px;font-size:16px;cursor:pointer">&minus;</button>
+              <span style="width:26px;text-align:center;font-size:13px;font-weight:700">${c.qty}</span>
+              <button onclick="changeQty('${c.id}','${c.size}',1)" style="appearance:none;background:transparent;border:none;color:var(--text);width:30px;height:30px;font-size:16px;cursor:pointer">+</button>
+            </div>
+            <button onclick="removeItem('${c.id}','${c.size}')" style="appearance:none;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline">${t2.remove_word}</button>
+          </div>
+        </div>
+      </div>`}).join('')}
+  </div>
+  <div style="border-top:1px solid var(--line);padding:20px 24px">
+    <div style="font-size:12px;color:var(--accent2);margin-bottom:12px;text-align:center">${freeRemLabel}</div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:6px"><span>${t2.sub_word}</span><span style="color:var(--text);font-weight:700">${money(subtotal)}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin-bottom:16px"><span>${t2.total_word}</span><span>${money(total)}</span></div>
+    <button class="mc-btn-acc" onclick="goCheckout()" style="width:100%;padding:16px">${t2.checkout_word}</button>
+  </div>`}`;
+}
+
+// ── STATE MACHINE ─────────────────────────────────────────────────────────────
+function setState(patch){
+  const prev={...state};
+  Object.assign(state,patch);
+
+  // Language change: full re-render
+  if('lang' in patch){ renderAll(); return; }
+
+  // Screen / product change
+  if('screen' in patch||'selectedId' in patch||'orderNo' in patch){
+    renderMain(); setupReveal(); return;
+  }
+
+  // Shop filters
+  if('activeCat' in patch||'sort' in patch){
+    if(state.screen==='shop') renderMain(); return;
+  }
+
+  // Size/qty changes on product page
+  if('selSize' in patch||'selQty' in patch){
+    const sp=document.getElementById('mc-size-picker');
+    const qa=document.getElementById('mc-qty-add');
+    if(sp){
+      const p=find(state.selectedId); if(!p) return;
+      const sz=sizesFor(p);
+      sp.innerHTML=sz.map(s=>{const on=s===state.selSize;return `<button onclick="setSelSize('${s}')" style="appearance:none;min-width:54px;padding:12px 14px;cursor:pointer;font-size:13px;font-weight:600;border-radius:3px;background:${on?'var(--accent)':'transparent'};color:${on?'#100E0B':'var(--text)'};border:1px solid ${on?'var(--accent)':'var(--line)'}">${s}</button>`;}).join('');
+    }
+    if(qa){
+      const p=find(state.selectedId); if(!p) return;
+      qa.innerHTML=`
+        <div style="display:flex;align-items:center;border:1px solid var(--line);border-radius:3px">
+          <button onclick="decQty()" style="appearance:none;background:transparent;border:none;color:var(--text);width:46px;height:54px;font-size:20px;cursor:pointer">−</button>
+          <span style="width:38px;text-align:center;font-size:15px;font-weight:700">${state.selQty}</span>
+          <button onclick="incQty()" style="appearance:none;background:transparent;border:none;color:var(--text);width:46px;height:54px;font-size:20px;cursor:pointer">+</button>
+        </div>
+        <button class="mc-btn-acc" onclick="addSelToCart()" style="flex:1;padding:0 20px">${tr('add_to_bag_word')} &middot; ${money(p.price)}</button>`;
+    }
+    return;
+  }
+
+  // Drawer toggle
+  if('drawerOpen' in patch){
+    document.getElementById('mc-drawer').classList.toggle('open',state.drawerOpen);
+    document.getElementById('mc-overlay').classList.toggle('open',state.drawerOpen);
+    return;
+  }
+
+  // Search toggle
+  if('searchOpen' in patch){
+    document.getElementById('mc-search').classList.toggle('open',state.searchOpen);
+    return;
+  }
+
+  // Cart change
+  if('cart' in patch){
+    const {cartCount}=cartTotals();
+    const badge=document.getElementById('mc-cart-badge');
+    if(badge){ badge.textContent=cartCount; badge.style.display=cartCount>0?'flex':'none'; }
+    document.getElementById('mc-drawer').innerHTML=buildDrawer();
+    document.getElementById('mc-drawer').classList.toggle('open',state.drawerOpen);
+    document.getElementById('mc-overlay').classList.toggle('open',state.drawerOpen);
+    return;
+  }
+}
+
+// ── SEARCH INPUT (no re-render) ───────────────────────────────────────────────
+function onSearchInput(val){
+  state.search=val;
+  if(state.screen==='shop') renderMain();
+}
+
+// ── RENDER FUNCTIONS ──────────────────────────────────────────────────────────
+function renderAll(){
+  renderHeader();
+  renderSearchOverlay();
+  renderMain();
+  renderFooter();
+  document.getElementById('mc-drawer').innerHTML=buildDrawer();
+  document.getElementById('mc-drawer').classList.toggle('open',state.drawerOpen);
+  document.getElementById('mc-overlay').classList.toggle('open',state.drawerOpen);
+  document.getElementById('mc-search').classList.toggle('open',state.searchOpen);
+  setupReveal();
+}
+
+function renderHeader(){
+  document.getElementById('mc-header').innerHTML=buildHeader();
+}
+
+function renderSearchOverlay(){
+  document.getElementById('mc-search').innerHTML=buildSearchOverlay();
+}
+
+function renderMain(){
+  const el=document.getElementById('mc-main');
+  switch(state.screen){
+    case 'home': el.innerHTML=buildHome(); break;
+    case 'shop': el.innerHTML=buildShop(); break;
+    case 'product': el.innerHTML=buildProduct(); break;
+    case 'checkout': el.innerHTML=buildCheckout(); break;
+    case 'confirm': el.innerHTML=buildConfirm(); break;
+    case 'fit': el.innerHTML=buildFit(); break;
+    default: el.innerHTML=buildHome();
+  }
+  setupReveal();
+}
+
+function renderFooter(){
+  const el=document.getElementById('mc-footer');
+  el.style.cssText='border-top:1px solid var(--line);background:var(--panel);margin-top:20px';
+  el.innerHTML=buildFooter();
+}
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────────────────────
+let _revealObs = null;
+function setupReveal(){
+  if(_revealObs) _revealObs.disconnect();
+  _revealObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.08});
+  document.querySelectorAll('.mc-reveal').forEach(el=>_revealObs.observe(el));
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderAll();
+</script>
+</body>
+</html>
