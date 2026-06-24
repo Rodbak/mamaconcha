@@ -54,23 +54,24 @@ input{color:#ECE4D6;background:transparent}
 <div id="mc-toast"></div>
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
+// img: swap any URL below with your own product photo (600×800 or 3:4 ratio recommended)
 const catalog = [
-  {id:'sahel-kaftan',name:'Sahel Kaftan',category:'Kaftans',price:145,color:'#2E3A59',colorName:'Indigo',tag:'Bestseller',desc:'A flowing full-length kaftan cut from breathable cotton, finished with hand-embroidered neckline detailing.'},
-  {id:'timbuktu-agbada',name:'Timbuktu Agbada Set',category:'Agbada',price:320,color:'#8A4B32',colorName:'Clay',tag:'New',desc:'Three-piece agbada — a flowing outer robe, inner tunic and drawstring trousers in richly woven fabric.'},
-  {id:'kano-dashiki',name:'Kano Dashiki Shirt',category:'Dashiki',price:85,color:'#C68A2E',colorName:'Ochre',tag:'',desc:'A classic dashiki with a bold embroidered placket and a relaxed short-sleeve fit.'},
-  {id:'sokoto-trouser',name:'Sokoto Wide Trouser',category:'Trousers',price:95,color:'#4A4A2E',colorName:'Olive',tag:'',desc:'High-rise wide-leg sokoto trousers with an elasticated waist and deep side pockets.'},
-  {id:'adire-boubou',name:'Adire Boubou Robe',category:'Agbada',price:240,color:'#27506B',colorName:'Adire Blue',tag:'',desc:'A hand-dyed adire boubou robe with resist-dyed indigo patterning and a generous one-size drape.'},
-  {id:'kente-kufi',name:'Kente Kufi Cap',category:'Accessories',price:38,color:'#B0472B',colorName:'Kente Red',tag:'Bestseller',desc:'A woven kufi cap in vibrant kente-inspired stripes.'},
-  {id:'cowrie-necklace',name:'Cowrie Bead Necklace',category:'Accessories',price:45,color:'#2F5D4E',colorName:'Emerald',tag:'',desc:'A statement necklace strung with natural cowrie shells and glass beads.'},
-  {id:'raffia-tote',name:'Raffia Market Tote',category:'Accessories',price:60,color:'#A88248',colorName:'Natural',tag:'New',desc:'A hand-woven raffia market tote with leather handles and a roomy interior.'},
-  {id:'ndebele-kaftan',name:'Ndebele Kaftan',category:'Kaftans',price:160,color:'#9C3A2E',colorName:'Sienna',tag:'New',desc:'A geometric Ndebele-inspired kaftan with contrast piping and a structured collar.'},
-  {id:'mudcloth-dashiki',name:'Mudcloth Dashiki',category:'Dashiki',price:92,color:'#3A332B',colorName:'Mud Brown',tag:'',desc:'A dashiki printed with traditional bogolan mudcloth motifs in earthen tones.'},
-  {id:'asooke-wrap',name:'Aso-Oke Wrap Dress',category:'Womenswear',price:175,color:'#7A3B4E',colorName:'Plum',tag:'New',desc:'A wrap dress woven from aso-oke fabric with a tie waist and fluid skirt.'},
-  {id:'ankara-maxi',name:'Ankara Maxi Dress',category:'Womenswear',price:150,color:'#B45A38',colorName:'Terracotta',tag:'Bestseller',desc:'A floor-length Ankara print maxi with a fitted bodice and flared hem.'},
-  {id:'boubou-set-w',name:"Women's Boubou Set",category:'Womenswear',price:210,color:'#2E5A52',colorName:'Teal',tag:'',desc:'A matching boubou robe and trouser set in lustrous embroidered fabric.'},
-  {id:'desert-linen-kaftan',name:'Desert Linen Kaftan',category:'Kaftans',price:130,color:'#C9A876',colorName:'Sand',tag:'',desc:'A lightweight pure-linen kaftan built for heat, with a split side hem.'},
-  {id:'royal-agbada',name:'Royal Agbada Gold',category:'Agbada',price:380,color:'#9A7B1F',colorName:'Royal Gold',tag:'Bestseller',desc:'Our most ornate agbada — gold-thread embroidery across a deep three-piece set.'},
-  {id:'sahara-sokoto-set',name:'Sahara Sokoto Set',category:'Trousers',price:110,color:'#6B4A2E',colorName:'Walnut',tag:'',desc:'A coordinated tunic-and-sokoto set in brushed cotton with tonal embroidery.'},
+  {id:'sahel-kaftan',name:'Sahel Kaftan',category:'Kaftans',price:145,color:'#2E3A59',colorName:'Indigo',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?kaftan,african,men&sig=1',desc:'A flowing full-length kaftan cut from breathable cotton, finished with hand-embroidered neckline detailing.'},
+  {id:'timbuktu-agbada',name:'Timbuktu Agbada Set',category:'Agbada',price:320,color:'#8A4B32',colorName:'Clay',tag:'New',img:'https://source.unsplash.com/600x800/?agbada,african,robe&sig=2',desc:'Three-piece agbada — a flowing outer robe, inner tunic and drawstring trousers in richly woven fabric.'},
+  {id:'kano-dashiki',name:'Kano Dashiki Shirt',category:'Dashiki',price:85,color:'#C68A2E',colorName:'Ochre',tag:'',img:'https://source.unsplash.com/600x800/?dashiki,african,shirt&sig=3',desc:'A classic dashiki with a bold embroidered placket and a relaxed short-sleeve fit.'},
+  {id:'sokoto-trouser',name:'Sokoto Wide Trouser',category:'Trousers',price:95,color:'#4A4A2E',colorName:'Olive',tag:'',img:'https://source.unsplash.com/600x800/?african,fashion,trousers&sig=4',desc:'High-rise wide-leg sokoto trousers with an elasticated waist and deep side pockets.'},
+  {id:'adire-boubou',name:'Adire Boubou Robe',category:'Agbada',price:240,color:'#27506B',colorName:'Adire Blue',tag:'',img:'https://source.unsplash.com/600x800/?boubou,african,blue&sig=5',desc:'A hand-dyed adire boubou robe with resist-dyed indigo patterning and a generous one-size drape.'},
+  {id:'kente-kufi',name:'Kente Kufi Cap',category:'Accessories',price:38,color:'#B0472B',colorName:'Kente Red',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?africa,hat,textile&sig=6',desc:'A woven kufi cap in vibrant kente-inspired stripes.'},
+  {id:'cowrie-necklace',name:'Cowrie Bead Necklace',category:'Accessories',price:45,color:'#2F5D4E',colorName:'Emerald',tag:'',img:'https://source.unsplash.com/600x800/?cowrie,necklace,beads&sig=7',desc:'A statement necklace strung with natural cowrie shells and glass beads.'},
+  {id:'raffia-tote',name:'Raffia Market Tote',category:'Accessories',price:60,color:'#A88248',colorName:'Natural',tag:'New',img:'https://source.unsplash.com/600x800/?raffia,basket,tote&sig=8',desc:'A hand-woven raffia market tote with leather handles and a roomy interior.'},
+  {id:'ndebele-kaftan',name:'Ndebele Kaftan',category:'Kaftans',price:160,color:'#9C3A2E',colorName:'Sienna',tag:'New',img:'https://source.unsplash.com/600x800/?kaftan,african,women&sig=9',desc:'A geometric Ndebele-inspired kaftan with contrast piping and a structured collar.'},
+  {id:'mudcloth-dashiki',name:'Mudcloth Dashiki',category:'Dashiki',price:92,color:'#3A332B',colorName:'Mud Brown',tag:'',img:'https://source.unsplash.com/600x800/?mudcloth,african,textile&sig=10',desc:'A dashiki printed with traditional bogolan mudcloth motifs in earthen tones.'},
+  {id:'asooke-wrap',name:'Aso-Oke Wrap Dress',category:'Womenswear',price:175,color:'#7A3B4E',colorName:'Plum',tag:'New',img:'https://source.unsplash.com/600x800/?african,dress,wrap&sig=11',desc:'A wrap dress woven from aso-oke fabric with a tie waist and fluid skirt.'},
+  {id:'ankara-maxi',name:'Ankara Maxi Dress',category:'Womenswear',price:150,color:'#B45A38',colorName:'Terracotta',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?ankara,dress,african&sig=12',desc:'A floor-length Ankara print maxi with a fitted bodice and flared hem.'},
+  {id:'boubou-set-w',name:"Women's Boubou Set",category:'Womenswear',price:210,color:'#2E5A52',colorName:'Teal',tag:'',img:'https://source.unsplash.com/600x800/?african,women,outfit&sig=13',desc:'A matching boubou robe and trouser set in lustrous embroidered fabric.'},
+  {id:'desert-linen-kaftan',name:'Desert Linen Kaftan',category:'Kaftans',price:130,color:'#C9A876',colorName:'Sand',tag:'',img:'https://source.unsplash.com/600x800/?kaftan,linen,sand&sig=14',desc:'A lightweight pure-linen kaftan built for heat, with a split side hem.'},
+  {id:'royal-agbada',name:'Royal Agbada Gold',category:'Agbada',price:380,color:'#9A7B1F',colorName:'Royal Gold',tag:'Bestseller',img:'https://source.unsplash.com/600x800/?agbada,gold,african&sig=15',desc:'Our most ornate agbada — gold-thread embroidery across a deep three-piece set.'},
+  {id:'sahara-sokoto-set',name:'Sahara Sokoto Set',category:'Trousers',price:110,color:'#6B4A2E',colorName:'Walnut',tag:'',img:'https://source.unsplash.com/600x800/?african,men,fashion&sig=16',desc:'A coordinated tunic-and-sokoto set in brushed cotton with tonal embroidery.'},
 ];
 
 const T = {
@@ -280,13 +281,16 @@ function showToast(msg){
 // ── CLOTH TEXTURE ─────────────────────────────────────────────────────────────
 const clothSm = c => `background-color:${c};background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.11) 0 2px,transparent 2px 12px),repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 12px),radial-gradient(circle at 50% 24%,rgba(255,255,255,.14),transparent 56%)`;
 const clothLg = c => `background-color:${c};background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.12) 0 2px,transparent 2px 13px),repeating-linear-gradient(-45deg,rgba(255,255,255,.07) 0 2px,transparent 2px 13px),radial-gradient(circle at 50% 22%,rgba(255,255,255,.16),transparent 58%)`;
+// image backgrounds — gradient overlay keeps card text legible; falls back to cloth if no img
+const imgBgSm = p => p.img ? `background:${p.color};background-image:linear-gradient(to bottom,rgba(0,0,0,.22) 0,transparent 40%,rgba(0,0,0,.52) 100%),url('${p.img}');background-size:cover;background-position:center top` : clothSm(p.color);
+const imgBgLg = p => p.img ? `background:${p.color};background-image:linear-gradient(to bottom,rgba(0,0,0,.18) 0,transparent 35%,rgba(0,0,0,.58) 100%),url('${p.img}');background-size:cover;background-position:center top` : clothLg(p.color);
 
 // ── PRODUCT CARD HTML ─────────────────────────────────────────────────────────
 function productCard(p,i,showAdd=true){
   const delay=((i%8)*0.05).toFixed(2)+'s';
   const cat=catStr(p.category); const tag=tagStr(p.tag);
   return `<div class="card-wrap" onclick="openProduct('${p.id}')" style="animation:mcFadeIn .5s ease both;animation-delay:${delay}">
-    <div class="card-tile" style="${clothSm(p.color)}">
+    <div class="card-tile" style="${imgBgSm(p)}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600">${cat}</span>
         ${tag?`<span style="background:var(--accent);color:#100E0B;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;border-radius:2px">${tag}</span>`:''}
@@ -344,7 +348,7 @@ function buildHome(){
           <div><div style="font-family:'Anton';font-size:28px">4.9</div><div style="font-size:12px;color:var(--muted);letter-spacing:.04em">${tr('stat_rating')}</div></div>
         </div>
       </div>
-      <div onclick="navCat('Agbada')" style="cursor:pointer;aspect-ratio:4/5;border-radius:4px;${clothLg('#8A4B32')};position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:28px">
+      <div onclick="navCat('Agbada')" style="cursor:pointer;aspect-ratio:4/5;border-radius:4px;${imgBgLg(find('royal-agbada'))};position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:28px">
         <span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600">${tr('hero_feat')}</span>
         <div>
           <div style="font-family:'Newsreader',serif;font-style:italic;font-size:40px;line-height:1;color:#fff;margin-bottom:8px">${tr('hero_card_title1')}<br>${tr('hero_card_title2')}</div>
@@ -452,7 +456,7 @@ function buildProduct(){
       <span style="color:var(--text)">${catStr(p.category)}</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:start">
-      <div style="aspect-ratio:4/5;border-radius:4px;${clothLg(p.color)};position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:30px">
+      <div style="aspect-ratio:4/5;border-radius:4px;${imgBgLg(p)};position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:30px">
         <span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600">${catStr(p.category)}</span>
         <div>
           <div style="font-family:'Newsreader',serif;font-style:italic;font-size:40px;line-height:1.02;color:#fff;margin-bottom:8px">${p.name}</div>
@@ -497,7 +501,7 @@ function buildProduct(){
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:26px 20px">
         ${related.map((r,i)=>`
           <div onclick="openProduct('${r.id}')" style="cursor:pointer;display:flex;flex-direction:column;gap:10px">
-            <div style="aspect-ratio:3/4;border-radius:3px;${clothSm(r.color)};display:flex;align-items:flex-end;padding:14px">
+            <div style="aspect-ratio:3/4;border-radius:3px;${imgBgSm(r)};display:flex;align-items:flex-end;padding:14px">
               <div style="font-family:'Newsreader',serif;font-style:italic;font-size:18px;color:rgba(255,255,255,.95)">${r.name}</div>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${r.name}</span><span style="font-weight:700">${money(r.price)}</span></div>
@@ -546,7 +550,7 @@ function buildCheckout(){
         <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px">
           ${state.cart.map(c=>{const p=find(c.id);return `
             <div style="display:flex;gap:12px;align-items:center">
-              <div style="width:48px;height:60px;border-radius:2px;flex-shrink:0;${clothSm(p.color)}"></div>
+              <div style="width:48px;height:60px;border-radius:2px;flex-shrink:0;${imgBgSm(p)}"></div>
               <div style="flex:1">
                 <div style="font-size:13px;font-weight:600">${p.name}</div>
                 <div style="font-size:11px;color:var(--muted)">${tr('size_word')} ${c.size} &middot; ${tr('qty_word')} ${c.qty}</div>
@@ -723,7 +727,7 @@ function buildDrawer(){
   <div style="flex:1;overflow-y:auto;padding:8px 24px">
     ${state.cart.map(c=>{const p=find(c.id);return `
       <div style="display:flex;gap:14px;padding:18px 0;border-bottom:1px solid var(--line)">
-        <div style="width:64px;height:80px;border-radius:3px;flex-shrink:0;${clothSm(p.color)}"></div>
+        <div style="width:64px;height:80px;border-radius:3px;flex-shrink:0;${imgBgSm(p)}"></div>
         <div style="flex:1;display:flex;flex-direction:column">
           <div style="display:flex;justify-content:space-between;gap:8px">
             <div style="font-size:14px;font-weight:600">${p.name}</div>
